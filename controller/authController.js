@@ -1,5 +1,5 @@
-import bcrypt from 'bcrypt';
-import { User } from "../model/user";
+import bcrypt from 'bcryptjs';
+import { User } from "../model/user.js";
 
 export async function handleSignup(req, res) {
     try {
