@@ -3,8 +3,8 @@ import { User } from "../model/user.js";
 
 export async function handleSignup(req, res) {
     try {
-        const { name, email, password } = req.body;
-        if (!name || !email || !password) {
+        const { username, email, password } = req.body;
+        if (!username || !email || !password) {
             return res.status(422).json({ message: "Please fill all field(name, email, password)" }); //422 error -> invalid input data from user
         }
 
@@ -13,7 +13,7 @@ export async function handleSignup(req, res) {
             return res.status(409).json({ message: "Email is already taken" }); //409 -> Conflict
         }
 
-        const hasedPassword = bcrypt(password, 10);
+        const hasedPassword = await bcrypt.hash(password, 10);
         const newUser = await User.create({
             username: username,
             email: email,

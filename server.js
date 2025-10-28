@@ -4,6 +4,7 @@ import router from './routes/authRoute.js';
 import { connectToDb } from './database/connection.js';
 
 const app = express();
+app.use(express.json());
 
 connectToDb();
 
