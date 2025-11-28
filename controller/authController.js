@@ -60,7 +60,18 @@ export async function handleLogin(req, res) {
         subject: "accesToken",
         expiresIn: process.env.accessTokenExpiresIn
       }
-    )
+    );
+
+    const refreshToken = jwt.sign(
+      {
+        userId: user._id,
+      },
+      process.env.refreshTokenSecret,
+      {
+        subject: "refreshToken",
+        expiresIn: process.env.refreshTokenExpiresIn
+      }
+    );
 
   } catch (error) {
     return res.status(500).json({ message: error.message });
