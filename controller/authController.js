@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import { User } from "../model/user.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
+//----Signup Handler----
 export async function handleSignup(req, res) {
   try {
     const { username, email, password } = req.body;
@@ -31,6 +35,7 @@ export async function handleSignup(req, res) {
   }
 }
 
+//----Login Handler----
 export async function handleLogin(req, res) {
   try {
     const { email, password } = req.body;
@@ -38,11 +43,24 @@ export async function handleLogin(req, res) {
       return res.status(422).json({ message: "Fill all Field(email, password)" })
     }
 
-    const findUser = await User.findOne({ email });
-    const passwordMatch = await bcrypt.compare(password, findUser.password);
-    if (!findUser || !passwordMatch) {
+    const user = await User.findOne({ email });
+    if (!user) {
       return res.status(404).json({ message: "Invalid email or password" });
     }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(404).json({ message: "Invalid email or password" });
+    }
+    const accessToken = jwt.sign(
+      {
+        userId: user._id,
+      },
+      process.env.accessTokenSecret,
+      {
+        subject: "accesToken",
+        expiresIn: process.env.accessTokenExpiresIn
+      }
+    )
 
   } catch (error) {
     return res.status(500).json({ message: error.message });
