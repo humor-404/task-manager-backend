@@ -9,8 +9,8 @@ app.use(express.json());
 
 connectToDb();
 
-app.use('/api/user/', authRouter);
-app.use('/user/', userRouter);
+app.use('/api/auth/', authRouter);
+app.use('/api/user/', userRouter);
 
 config();
 const PORT = process.env.PORT || 8003;
