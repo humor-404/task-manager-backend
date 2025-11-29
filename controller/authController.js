@@ -69,7 +69,7 @@ export async function handleLogin(req, res) {
       {
         userId: user._id,
       },
-      process.env.refresh_token_secret ,
+      process.env.refresh_token_secret,
       {
         subject: "refreshToken",
         expiresIn: process.env.refresh_token_expires_in,
@@ -88,6 +88,56 @@ export async function handleLogin(req, res) {
       accessToken: accessToken,
       refreshToken: refreshToken,
     });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
+
+export async function handleRefreshToken(req, res) {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return res.status(404).json({ message: "Refresh Token is not found" });
+    }
+    const decodeRefreshToken = jwt.verify(refreshToken, process.env.refresh_token_secret);
+    const userRefreshToken = await RefreshToken.findOne({ refreshToken });
+    if (!userRefreshToken) {
+      return res.status(404).json({ message: "user refresh token is expired or invalid" });
+    }
+    await RefreshToken.findByIdAndDelete({ _id: userRefreshToken._id });
+
+    const accessToken = jwt.sign(
+      {
+        userId: decodeRefreshToken.userId
+      },
+      process.env.access_token_secret,
+      {
+        subject: "access token generated from refresh token",
+        expiresIn: process.env.access_token_expires_in
+      }
+    );
+
+    const newRefreshToken = jwt.sign(
+      {
+        userId: decodeRefreshToken.userId
+      },
+      process.env.refresh_token_secret,
+      {
+        subject: "New refresh token",
+        expiresIn: process.env.refresh_token_expires_in
+      }
+    );
+
+    await RefreshToken.create({
+      refreshToken: newRefreshToken,
+      userId: decodeRefreshToken.userId
+    });
+
+    return res.status(200).json({
+      accessToken: accessToken,
+      refreshToken: newRefreshToken
+    });
+
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
