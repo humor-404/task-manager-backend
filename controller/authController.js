@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { User } from "../model/user.js";
+import { RefreshToken } from "../model/refreshToken.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
@@ -40,7 +41,9 @@ export async function handleLogin(req, res) {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(422).json({ message: "Fill all Field(email, password)" })
+      return res
+        .status(422)
+        .json({ message: "Fill all Field(email, password)" });
     }
 
     const user = await User.findOne({ email });
@@ -55,24 +58,36 @@ export async function handleLogin(req, res) {
       {
         userId: user._id,
       },
-      process.env.accessTokenSecret,
+      process.env.access_token_secret,
       {
         subject: "accesToken",
-        expiresIn: process.env.accessTokenExpiresIn
-      }
+        expiresIn: process.env.access_token_expires_in,
+      },
     );
 
     const refreshToken = jwt.sign(
       {
         userId: user._id,
       },
-      process.env.refreshTokenSecret,
+      process.env.refresh_token_secret ,
       {
         subject: "refreshToken",
-        expiresIn: process.env.refreshTokenExpiresIn
-      }
+        expiresIn: process.env.refresh_token_expires_in,
+      },
     );
 
+    await RefreshToken.create({
+      refreshToken: refreshToken,
+      userId: user._id,
+    });
+
+    return res.status(200).json({
+      message: "Success",
+      userId: user._id,
+      email: user.email,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
