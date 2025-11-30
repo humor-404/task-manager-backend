@@ -12,8 +12,8 @@ import { Task } from "../model/task.js";
 
 export async function handleTask(req, res) {
     try {
-        const { title, description, completed} = req.body;
-        if (!title || !description ) {
+        const { title, description, completed } = req.body;
+        if (!title || !description) {
             return res.status(400).json({
                 message: "Please enter the required field(title, description, userId)"
             });
@@ -25,12 +25,24 @@ export async function handleTask(req, res) {
             userId: req.user.id
         });
         return res.status(200).json({ message: "Task Added Successfully" });
-    } catch(error) {
+    } catch (error) {
         return res.status(411).json({ status: error.message });
     }
 }
-export function getTask(req, res) {
-
+export async function getTask(req, res) {
+    try {
+        const tasks = await Task.find({ userId: req.user.id });
+        console.log(tasks);
+        if (tasks.length == 0) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+        return res.status(200).json({
+            count: tasks.length,
+            tasks
+        });
+    } catch (error) {
+        return res.status(411).json({ status: error.message });
+    }
 }
 export function getTaskByID(req, res) {
 
