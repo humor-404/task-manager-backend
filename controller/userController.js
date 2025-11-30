@@ -1,4 +1,5 @@
 import { User } from "../model/user.js";
+import { Task } from "../model/task.js";
 
 // export async function handleCurrentSite(req, res) {
 //     try {
@@ -9,8 +10,24 @@ import { User } from "../model/user.js";
 //     }
 // }
 
-export function handleTask(req, res) {
-
+export async function handleTask(req, res) {
+    try {
+        const { title, description, completed, userId } = req.body;
+        if (!title || !description || !userId) {
+            return res.status(400).json({
+                message: "Please enter the required field(title, description, userId)"
+            });
+        }
+        await Task.create({
+            title: title,
+            description: description,
+            completed: completed,
+            userId: req.user.id
+        });
+        return res.status(200).json({ message: "Task Added Successfully" });
+    } catch(error) {
+        return res.status(411).json({ status: error.message });
+    }
 }
 export function getTask(req, res) {
 
