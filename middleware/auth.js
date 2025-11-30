@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
-export function authorized(req, res, next) {
+export function ensureAuth(req, res, next) {
     const accessToken = req.headers.authorization;
     if (!accessToken) {
         return res.status(401).json({ message: "Access Token not found" });
