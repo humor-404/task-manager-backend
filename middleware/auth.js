@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export function ensureAuth(req, res, next) {
-    const accessToken = req.headers.authorization?.split(" ")[1];
+    // const accessToken = req.headers.authorization?.split(" ")[1];
+    const accessToken = req.headers.authorization;
     if (!accessToken) {
         return res.status(401).json({ message: "Access Token not found" });
     }
