@@ -12,8 +12,8 @@ import { Task } from "../model/task.js";
 
 export async function handleTask(req, res) {
     try {
-        const { title, description, completed, userId } = req.body;
-        if (!title || !description || !userId) {
+        const { title, description, completed} = req.body;
+        if (!title || !description ) {
             return res.status(400).json({
                 message: "Please enter the required field(title, description, userId)"
             });
