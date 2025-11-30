@@ -9,7 +9,7 @@ export function ensureAuth(req, res, next) {
     }
     try {
         const decodeAccessToken = jwt.verify(accessToken, process.env.access_token_secret);
-        req.user = { id: decodeAccessToken.userId, username: decodeAccessToken.username };
+        req.user = { id: decodeAccessToken.userId };
         next();
 
     } catch (error) {
