@@ -32,7 +32,6 @@ export async function handleTask(req, res) {
 export async function getTask(req, res) {
     try {
         const tasks = await Task.find({ userId: req.user.id });
-        console.log(tasks);
         if (tasks.length == 0) {
             return res.status(404).json({ message: "Task not found" });
         }
@@ -44,10 +43,26 @@ export async function getTask(req, res) {
         return res.status(411).json({ status: error.message });
     }
 }
-export function getTaskByID(req, res) {
-
+export async function getTaskByID(req, res) {
+    try {
+        const taskId = req.params.id;
+        if (!taskId) {
+            return res.status(400).json({ message: "provide id of a task" });
+        }
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ message: "task not found" });
+        }
+        return res.status(200).json({ task });
+    } catch (error) {
+        return res.status(411).json({ status: error.message });
+    }
 }
 export function updateTask(req, res) {
+    const taskId = req.params.id;
+    if (!taskId) {
+        return res.status(400).json({ message: "provide id of a task" });
+    }
 
 }
 export function deleteTask(req, res) {
