@@ -66,7 +66,7 @@ export async function updateTask(req, res) {
         if (title !== undefined) task.title = title;
         if (description !== undefined) task.description = description;
         if (completed !== undefined) task.completed = completed;
-        
+
         const updatedTask = await task.save();
 
         return res.status(200).json({ updatedTask });
@@ -75,6 +75,17 @@ export async function updateTask(req, res) {
     }
 }
 
-export function deleteTask(req, res) {
-
+export async function deleteTask(req, res) {
+    try {
+        const deletedTask = await Task.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.user.id,
+        });
+        if (!deletedTask) {
+            return res.status(404).json({ message: "Task not found or not authorized" });
+        }
+        return res.status(200).json({ message: "Task Deleted", Task: deletedTask });
+    } catch (error) {
+        return res.status(411).json({ status: error.message });
+    }
 }
