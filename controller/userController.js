@@ -84,6 +84,7 @@ export async function deleteTask(req, res) {
         if (!deletedTask) {
             return res.status(404).json({ message: "Task not found or not authorized" });
         }
+
         return res.status(200).json({ message: "Task Deleted", Task: deletedTask });
     } catch (error) {
         return res.status(411).json({ status: error.message });
