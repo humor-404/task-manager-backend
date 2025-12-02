@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
+dotenv.config();
 
 export function connectToDb() {
     mongoose
-        .connect("mongodb://127.0.0.1:27017/task")
+        .connect(process.env.database_id)
         .then(() => console.log("MongoDb connected"))
         .catch((e) => console.log("cannot connect to database", e));
 }
